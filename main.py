@@ -2,11 +2,12 @@ from typing import List
 
 def path_to_file_list(path: str) -> List[str]:
     """Reads a file and returns a list of lines in the file"""
-    lines = open(path, 'r').read().split('\n')
+    with open(path, 'r', encoding='utf-8') as f:
+        lines = f.read().split('\n')
     return lines
 
 def train_file_list_to_json(english_file_list: List[str], german_file_list: List[str]) -> List[str]:
-    """Converts two lists of file paths into a list of json strings"""
+    """Converts two lists of file paths into a list of JSON strings"""
     # Preprocess unwanted characters
     def process_file(file):
         if '\\' in file:
@@ -16,24 +17,22 @@ def train_file_list_to_json(english_file_list: List[str], german_file_list: List
             file = file.replace('"', '\\"')
         return file
 
-    # Template for json file
+    # Template for JSON file
     template_start = '{\"English\":\"'
     template_mid = '\",\"German\":\"'
     template_end = '\"}'
 
-    # Can this be working?
     processed_file_list = []
     for english_file, german_file in zip(english_file_list, german_file_list):
         english_file = process_file(english_file)
-        english_file = process_file(german_file)
-
-        processed_file_list.append(template_end + english_file + template_mid + german_file + template_start)
+        german_file = process_file(german_file)
+        processed_file_list.append(template_start + english_file + template_mid + german_file + template_end)
     return processed_file_list
 
 
 def write_file_list(file_list: List[str], path: str) -> None:
     """Writes a list of strings to a file, each string on a new line"""
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         for file in file_list:
             f.write(file + '\n')
             
@@ -47,4 +46,4 @@ if __name__ == "__main__":
 
     processed_file_list = train_file_list_to_json(english_file_list, german_file_list)
 
-    write_file_list(processed_file_list, path+'concated.json')
+    write_file_list(processed_file_list, path + 'concated.json')
